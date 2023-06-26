@@ -47,6 +47,26 @@ const (
 // 	return usersEmails, nil
 // }
 
+// Map the content of the file into a UsersEmails struct
+// func MapUserEmails(user string) (*models.UserEmails, error) {
+// 	var userEmails models.UserEmails
+// 	var err error
+// 	path := emailDataSetRoot + "/" + user
+
+// 	userPath, err := getAbsolutePath(path)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed to obtain the users path from %s: %w\n", user, err)
+// 	}
+
+// 	userEmails.UserName = user
+// 	userEmails.Emails, err = extractEmailsByUser(userPath)
+// 	if err != nil {
+// 		return nil, fmt.Errorf("failed extracting the emails from the user %s: %v\n", user, err)
+// 	}
+
+// 	return &userEmails, nil
+// }
+
 // Get the names of the users' folders
 func GetUsers() ([]string, error) {
 	var users []string
@@ -69,7 +89,7 @@ func GetUsers() ([]string, error) {
 	return users, nil
 }
 
-//Build the absolute path of the file
+//Build the absolute path of the directory/file
 func getAbsolutePath(path string) (string, error){
 	// Obtiene el directorio de trabajo actual
 	currentDir, err := os.Getwd()
@@ -82,26 +102,6 @@ func getAbsolutePath(path string) (string, error){
 
 	return finalPath, nil
 }
-
-// Map the content of the file into a UsersEmails struct
-// func MapUserEmails(user string) (*models.UserEmails, error) {
-// 	var userEmails models.UserEmails
-// 	var err error
-// 	path := emailDataSetRoot + "/" + user
-
-// 	userPath, err := getAbsolutePath(path)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to obtain the users path from %s: %w\n", user, err)
-// 	}
-
-// 	userEmails.UserName = user
-// 	userEmails.Emails, err = extractEmailsByUser(userPath)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed extracting the emails from the user %s: %v\n", user, err)
-// 	}
-
-// 	return &userEmails, nil
-// }
 
 // Walk through the user's directory to map every email
 func ExtractEmailsByUser(user string) ([]*models.Email, error) {

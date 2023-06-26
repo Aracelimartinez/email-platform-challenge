@@ -23,7 +23,7 @@ func init()  {
 }
 
 // Initialize the env variables
-func loadEnv() ( error) {
+func loadEnv() (error) {
 	var err error
 
 	if err = godotenv.Load(".env"); err != nil {
