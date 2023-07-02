@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	_ "net/http/pprof"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -19,24 +20,11 @@ func main() {
 		w.Write([]byte("Welcome"))
 	})
 	router.Get("/indexer", controllers.IndexEmails)
-	// router.Get("/zincsearch", controllers.Zincsearch)
+	router.Get("/search", controllers.SearchEmails)
+
+	//Profiling routes
+	router.Mount("/debug", middleware.Profiler())
+
 
 	http.ListenAndServe(":3000", router)
 }
-
-// func main() {
-// 	r := chi.NewRouter()
-
-// 	// Ruta para el endpoint /indexer
-// 	r.Post("/indexer", IndexerHandler)
-
-// 	// Inicia el servidor
-// 	http.ListenAndServe(":8080", r)
-// }
-
-// router.Use(middleware.Logger)
-// router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-// 	w.Write([]byte("welcome"))
-// })
-// http.ListenAndServe(":3000", router)
-// services.ProcessEmail()

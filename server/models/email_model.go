@@ -1,9 +1,9 @@
 package models
 
-// type UserEmails struct {
-// 	UserName string   `json:"user_name"`
-// 	Emails   []*Email `json:"emails"`
-// }
+const (
+	EmailDataSetRoot = "enron_mail_20150507/maildir"
+	EmailIndexName = "emails"
+)
 
 type Email struct {
 	MessageID   string `json:"message_id"`
@@ -12,7 +12,6 @@ type Email struct {
 	To          string `json:"to"`
 	Subject     string `json:"subject"`
 	ContentType string `json:"content_type"`
-	FilePath    string `json:"filepath"`
 	Body        string `json:"body"`
 }
 

@@ -1,78 +1,22 @@
 package services
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/Aracelimartinez/email-platform-challenge/server/models"
+	"github.com/Aracelimartinez/email-platform-challenge/server/services/zincsearch"
 )
-
-const (
-	emailDataSetRoot = "enron_mail_20150507/maildir"
-)
-
-// func ExtractUsersEmails() ([]*models.UserEmails, error) {
-// 	var usersEmails []*models.UserEmails
-
-// 	// Obtiene el directorio de trabajo actual
-// 	currentDir, err := os.Getwd()
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to obtain the current path: %w\n", err)
-// 	}
-
-// 	// Construye la ruta absoluta del archivo
-// 	path := filepath.Join(currentDir, emailDataSetRoot)
-
-// 	//Obtiene todos los usuarios
-// 	users, err := getUsers(path)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	//Itera sobre los usarios para obtener los emails por usuario
-// 	for i, user := range users {
-// 		userPath := filepath.Join(path, user)
-// 		userEmails, err := mapUserEmails(user, userPath)
-// 		if err != nil {
-// 			return nil, fmt.Errorf("failed to extract the emails from user %s: %w\n",user, err)
-// 		}
-// 		usersEmails = append(usersEmails, userEmails)
-// 		if i == 1 {
-// 			return usersEmails, nil
-// 		}
-// 	}
-
-// 	return usersEmails, nil
-// }
-
-// Map the content of the file into a UsersEmails struct
-// func MapUserEmails(user string) (*models.UserEmails, error) {
-// 	var userEmails models.UserEmails
-// 	var err error
-// 	path := emailDataSetRoot + "/" + user
-
-// 	userPath, err := getAbsolutePath(path)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to obtain the users path from %s: %w\n", user, err)
-// 	}
-
-// 	userEmails.UserName = user
-// 	userEmails.Emails, err = extractEmailsByUser(userPath)
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed extracting the emails from the user %s: %v\n", user, err)
-// 	}
-
-// 	return &userEmails, nil
-// }
 
 // Get the names of the users' folders
 func GetUsers() ([]string, error) {
 	var users []string
 	var err error
 
-	path, err := getAbsolutePath(emailDataSetRoot)
+	path, err := getAbsolutePath(models.EmailDataSetRoot)
 	if err != nil {
 		return nil, fmt.Errorf("failed to obtain the user path: %w\n", err)
 	}
@@ -89,8 +33,8 @@ func GetUsers() ([]string, error) {
 	return users, nil
 }
 
-//Build the absolute path of the directory/file
-func getAbsolutePath(path string) (string, error){
+// Build the absolute path of the directory/file
+func getAbsolutePath(path string) (string, error) {
 	// Obtiene el directorio de trabajo actual
 	currentDir, err := os.Getwd()
 	if err != nil {
@@ -107,7 +51,7 @@ func getAbsolutePath(path string) (string, error){
 func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 	var emails []*models.Email
 	var err error
-	path := emailDataSetRoot + "/" + user
+	path := models.EmailDataSetRoot + "/" + user
 
 	userPath, err := getAbsolutePath(path)
 	if err != nil {
@@ -187,11 +131,46 @@ func mapEmail(lines []string) *models.Email {
 	return &email
 }
 
-// Imprime los valores de la estructura Email
-// fmt.Println("Message-ID:", email.MessageID)
-// 	fmt.Println("Date:", email.Date)
-// 	fmt.Println("From:", email.From)
-// 	fmt.Println("To:", email.To)
-// 	fmt.Println("Subject:", email.Subject)
-// 	fmt.Println("Content-Type:", email.ContentType)
-// 	fmt.Println("Body:", email.Body)
+func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) ([]*models.Email, error) {
+	emails := make([]*models.Email, 0, len(zincSearchResponse.Hits.Hits))
+
+	for _, hit := range zincSearchResponse.Hits.Hits {
+		var email models.Email
+
+		sourceBytes, err := json.Marshal(hit.Source)
+		if err != nil {
+			fmt.Println("Error in mapping the emails: ", err)
+			continue
+		}
+
+		err = json.Unmarshal(sourceBytes, &email)
+		if err != nil {
+			fmt.Println("Error in mapping the emails: ", err)
+			continue
+		}
+
+		emails = append(emails, &email)
+	}
+
+	return emails, nil
+}
+
+// func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) ([]*models.Email, error) {
+// 	emails := make([]*models.Email, 0, len(zincSearchResponse.Hits.Hits))
+
+// 	for _, hit := range zincSearchResponse.Hits.Hits {
+// 		email := models.Email{
+// 			MessageID:   hit.ID,
+// 			Date:        hit.Source["date"].(string), // Asegúrate de que el campo 'date' en el hit sea de tipo string
+// 			From:        hit.Source["from"].(string),
+// 			To:          hit.Source["to"].(string),
+// 			Subject:     hit.Source["subject"].(string),
+// 			ContentType: hit.Source["content_type"].(string),
+// 			Body:        hit.Source["body"].(string),
+// 		}
+
+// 		emails = append(emails, &email)
+// 	}
+
+// 	return emails, nil
+// }

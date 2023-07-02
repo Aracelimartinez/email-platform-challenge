@@ -1,10 +1,14 @@
 package controllers
 
 import (
+	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/Aracelimartinez/email-platform-challenge/server/models"
 	"github.com/Aracelimartinez/email-platform-challenge/server/services"
+	"github.com/Aracelimartinez/email-platform-challenge/server/services/zincsearch"
 )
 
 func IndexEmails(w http.ResponseWriter, r *http.Request) {
@@ -29,7 +33,7 @@ func IndexEmails(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Printf("Indexing emails from %s \n", user)
-		res, err := services.CreateDocument("emails", userEmails)
+		res, err := zincsearch.CreateDocument(models.EmailIndexName, userEmails)
 		if err != nil {
 			log.Printf("error indexing emails from user: %s ...\n", userEmails)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,4 +46,34 @@ func IndexEmails(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Emails indexed succesfully"))
+}
+
+func SearchEmails(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var err error
+	query := r.URL.Query().Get("query")
+	from := 0
+	maxResults := 15
+
+	searchResponse, err := zincsearch.SearchDocuments(models.EmailIndexName, query, from, maxResults)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		w.Write([]byte("Error searching into emails at the zincsearch API"))
+		return
+	}
+
+	emails, err := services.MapZincSearchEmails(searchResponse)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.Write([]byte("Failed mapping the emails"))
+		return
+	}
+
+	if len(emails) == 0 {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(fmt.Sprintf("Any results for the term: %s", query)))
+	}
+
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(emails)
 }
