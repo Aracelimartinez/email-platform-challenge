@@ -12,7 +12,7 @@
       </div>
 
       <BaseModal v-bind:modalActive="activeModal" @close-modal="toggleModal">
-        <div class="text-black">
+        <div class="text-color-text-header">
           <h1 class="text-2xl mb-1">About:</h1>
           <p class="mb-4">
             The email searcher allows you to search for emails with a particular content of your choice in the Enron data-set emails.
@@ -28,7 +28,6 @@
             <li>
               And just like that you get all the information you need in a second!
             </li>
-
           </ol>
         </div>
       </BaseModal>
