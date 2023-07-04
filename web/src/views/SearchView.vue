@@ -1,11 +1,30 @@
 <template>
-  <main class="container text-white">
+  <main class="container text-color-text-header">
     <div class="pt-4 mb-8 relative">
-      <input type="text" v-model="searchQuery" @input="getSearchResults" placeholder="Search for a term" class="py-2 px-1 w-full bg-transparent border-b focus:rounded focus:outline-none focus:text-gray-color focus:bg-white duration-150">
+      <input type="text" v-model="searchQuery" @input="getSearchResults" placeholder="Search for a term..." class="my-6 py-2 px-3 w-full bg-white shadow-md rounded focus:outline-none focus:shadow-color-primary/20 duration-150">
     </div>
 
-    <div class=" w-full h-96 mt-4 bg-color-primary-bg rounded ">
-something
+    <div class="flex flex-col items-center  text-color-text-header w-full h-96 mt-4 bg-white rounded shadow-md p-4">
+      <div v-if="!searchQuery" class="text-color-text-details text-center">
+        <i class="fa-solid fa-magnifying-glass text-8xl"></i>
+        <p class="font-light">Start searching for emails</p>
+      </div>
+
+      <div v-else-if="searchError">
+        <i class="fa-solid fa-circle-xmark text-8xl"></i>
+        <p>Sorry, something went wrong, please try again.</p>
+      </div>
+
+      <div v-else-if="!searchError  && emailsSearchResult && emailsSearchResult.length === 0">
+        <i class="fa-solid fa-lightbulb text-8xl"></i>
+        <p class="font-light">No results match your term, try a different word</p>
+      </div>
+
+      <div v-else>
+        <div v-for="emailResult in emailsSearchResult" :key="emailResult.id">
+          {{ emailResult.body }}
+        </div>
+      </div>
     </div>
   </main>
 </template>
@@ -17,40 +36,28 @@ import api from "../services/api";
 const searchQuery = ref("");
 const queryTimeout = ref(null);
 const emailsSearchResult = ref(null);
+const searchError = ref(null);
 
 const getSearchResults = () => {
   clearTimeout(queryTimeout.value);
   queryTimeout.value = setTimeout(async () => {
     if (searchQuery.value !== "") {
-      const results = await api.get("/search", {
-        params: {
-          query: searchQuery.value
-        }
-      });
-      emailsSearchResult.value = results.data;
-      console.log(emailsSearchResult.value)
+      try {
+        const results = await api.get("/search", {
+          params: {
+            query: searchQuery.value
+          }
+        });
+        emailsSearchResult.value = results.data;
+
+      } catch {
+        searchError.value = true
+      }
+
       return;
     }
     emailsSearchResult.value = null;
   }, 300)
 }
-
-
-// import { onMounted } from "vue";
-// import api from "../services/api.js"
-
-// const emails = ref([]);
-// const searchEmails = async (query) => {
-//   try {
-//     const response = await api.get('/search', { params: { query } });
-//     console.log(response.data);
-//     return response.data;
-//   } catch (error) {
-//     console.error(error);
-//     throw error;
-//   }
-// };
-
-// onMounted(searchEmails);
 
 </script>

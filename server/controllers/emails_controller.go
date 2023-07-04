@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -67,11 +66,6 @@ func SearchEmails(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		w.Write([]byte("Failed mapping the emails"))
 		return
-	}
-
-	if len(emails) == 0 {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(fmt.Sprintf("Any results for the term: %s", query)))
 	}
 
 	w.WriteHeader(http.StatusOK)

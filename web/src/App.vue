@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-screen font-Roboto bg-gradient-to-r from-color-primary to-color-secondary">
+  <div class="flex flex-col min-h-screen font-Roboto bg-color-primary-bg">
     <SiteNavigation />
     <RouterView />
   </div>

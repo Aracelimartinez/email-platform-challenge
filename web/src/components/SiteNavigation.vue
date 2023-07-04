@@ -1,23 +1,23 @@
 <template>
-  <header class="sticky top-0 bg-gradient-to-r from-color-primary to-color-secondary">
-    <nav class="container flex flex-col sm:flex-row items-center gap-4 text-white py-6">
+  <header class="sticky top-0 bg-color-primary-bg">
+    <nav class="container flex flex-col sm:flex-row items-center gap-4 py-6 text-transparent bg-clip-text bg-gradient-to-r from-color-primary to-color-secondary border-b-2 border-b-color-primary">
       <RouterLink :to="{name: 'home' }">
         <div class="flex items-center gap-3">
           <i class="fa-solid fa-paper-plane text-2xl"></i>
-          <p class="text-2xl">Email searcher</p>
+          <p class="text-2xl font-bold">Email searcher</p>
         </div>
       </RouterLink>
       <div class="flex gap-3 flex-1 justify-end">
-        <i class="fa-solid fa-circle-info text-xl hover:opacity-50 duration-150 cursor-pointer" @click="toggleModal"></i>
+        <i class="fa-solid fa-circle-info text-xl hover:text-color-secondary hover:opacity-50 cursor-pointer" @click="toggleModal"></i>
       </div>
 
       <BaseModal v-bind:modalActive="activeModal" @close-modal="toggleModal">
         <div class="text-color-text-header">
-          <h1 class="text-2xl mb-1">About:</h1>
+          <h1 class="text-xl font-bold mb-2 text-transparent bg-clip-text bg-gradient-to-r from-color-primary to-color-secondary">About:</h1>
           <p class="mb-4">
             The email searcher allows you to search for emails with a particular content of your choice in the Enron data-set emails.
           </p>
-          <h2 class="text-2xl">How it works:</h2>
+          <h2 class="text-xl mb-2 font-bold text-transparent bg-clip-text bg-gradient-to-r from-color-primary to-color-secondary">How it works:</h2>
           <ol class="list-decimal list-inside mb-4">
             <li>
               Search a word by entering it into the search bar.
