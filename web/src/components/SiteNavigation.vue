@@ -1,6 +1,6 @@
 <template>
   <header class="sticky top-0 bg-color-primary-bg">
-    <nav class="container flex flex-col sm:flex-row items-center gap-4 py-6 text-transparent bg-clip-text bg-gradient-to-r from-color-primary to-color-secondary border-b-2 border-b-color-primary">
+    <nav class="container flex  items-center gap-4 py-6 mb-6 text-transparent bg-clip-text bg-gradient-to-r from-color-primary to-color-secondary border-b-2 border-b-color-primary">
       <RouterLink :to="{name: 'home' }">
         <div class="flex items-center gap-3">
           <i class="fa-solid fa-paper-plane text-2xl"></i>

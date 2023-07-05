@@ -10,7 +10,7 @@ module.exports = {
         "color-primary-bg": "#FCFAF7",
         "color-text-header": "#292828",
         "color-text-body": "#373434",
-        "color-text-details": "#707070",
+        "color-text-details": "#666666",
       }
     },
     fontFamily: {
