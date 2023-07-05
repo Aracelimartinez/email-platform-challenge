@@ -28,14 +28,15 @@
       </div>
 
     <!-- Display emails list result -->
-      <div v-else v-for="emailResult in emailsSearchResult" :key="emailResult.id" class=" bg-white rounded shadow-md border-gray-100 text-base p-5 my-3 text-color-text-details/80">
+      <div v-else v-for="emailResult in emailsSearchResult" :key="emailResult.id" class=" bg-white rounded shadow-md border-gray-100 text-base p-5 my-3 text-color-text-details">
         <div class="text-transparent bg-clip-text bg-gradient-to-r from-color-primary to-color-secondary font-bold mb-2">
-          {{ emailResult.subject }}
+          <p v-html="highlight(emailResult.subject)"></p>
+
         </div>
         <div class="flex flex-col sm:flex-row text-color-text-header my-2 mr-4">
           <div class="flex mb-2">
             <i class="fa-solid fa-user"></i>
-            <p class="text-sm mx-2 font-normal">{{ emailResult.from }}</p>
+            <p class="text-sm mx-2 font-normal break-words">{{ emailResult.from }}</p>
           </div>
           <div class="flex">
             <i class="fa-solid fa-calendar"></i>
@@ -43,9 +44,7 @@
           </div>
         </div>
         <div>
-
-          <p class="text-sm"  v-html="highlight(emailResult.body)"></p>
-          <!-- <p class="text-sm">{{ emailResult.body }}</p> -->
+          <p class="text-sm break-words"  v-html="highlight(emailResult.body)"></p>
         </div>
       </div>
     </div>
@@ -95,8 +94,6 @@ const highlight = (paragraph) => {
 
 <style>
 .highlight {
-  /* background: rgba(213, 42, 71);
-  color: #ffffff */
   text-decoration: underline;
   text-decoration-color: #F5D751;
   text-decoration-thickness: 3px;
