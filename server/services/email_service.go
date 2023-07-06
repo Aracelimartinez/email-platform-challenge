@@ -16,10 +16,7 @@ func GetUsers() ([]string, error) {
 	var users []string
 	var err error
 
-	path, err := getAbsolutePath(models.EmailDataSetRoot)
-	if err != nil {
-		return nil, fmt.Errorf("failed to obtain the user path: %w\n", err)
-	}
+	path := filepath.Join(models.EmailDataSetRoot)
 
 	entries, err := os.ReadDir(path)
 	if err != nil {
@@ -33,32 +30,13 @@ func GetUsers() ([]string, error) {
 	return users, nil
 }
 
-// Build the absolute path of the directory/file
-func getAbsolutePath(path string) (string, error) {
-	// Obtiene el directorio de trabajo actual
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return "", fmt.Errorf("failed to obtain the current path: %w\n", err)
-	}
-
-	// Construye la ruta absoluta del archivo
-	finalPath := filepath.Join(currentDir, path)
-
-	return finalPath, nil
-}
-
 // Walk through the user's directory to map every email
 func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 	var emails []*models.Email
 	var err error
-	path := models.EmailDataSetRoot + "/" + user
+	path := filepath.Join(models.EmailDataSetRoot, user)
 
-	userPath, err := getAbsolutePath(path)
-	if err != nil {
-		return nil, fmt.Errorf("failed to obtain the users path from %s: %w\n", user, err)
-	}
-
-	err = filepath.Walk(userPath, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return fmt.Errorf("failed to go through the files and directories: %w\n", err)
 		}
