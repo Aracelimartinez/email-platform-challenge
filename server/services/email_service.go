@@ -1,13 +1,11 @@
 package services
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
-	"net/mail"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/Aracelimartinez/email-platform-challenge/server/models"
 	"github.com/Aracelimartinez/email-platform-challenge/server/services/zincsearch"
@@ -65,7 +63,6 @@ func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 
 // Read the email files and process it into an Email struct
 func processEmail(emailPath *string) (*models.Email, error) {
-	email := models.Email{}
 
 	// Lee el contenido del archivo
 	content, err := os.ReadFile(*emailPath)
@@ -73,27 +70,41 @@ func processEmail(emailPath *string) (*models.Email, error) {
 		return nil, fmt.Errorf("failed to reading the file: %w\n", err)
 	}
 
-	r := bytes.NewReader(content)
-	m, err := mail.ReadMessage(r)
-	if err != nil {
-		return nil, fmt.Errorf("failed to reading the email file: %w\n", err)
-	}
-	email.MessageID = m.Header.Get("Message-ID:")
-	email.Date = m.Header.Get("Date:")
-	email.From = m.Header.Get("From:")
-	email.To = m.Header.Get("To:")
-	email.Subject = m.Header.Get("Subject:")
-	email.ContentType = m.Header.Get("Content-Type:")
-	body, err := io.ReadAll(m.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to reading the body: %w\n", err)
-	}
-	email.Body = string(body)
+	// Convierte el contenido a string y separa el email en 2 partes
+	lines := strings.SplitN(string(content), "\r\n\r\n", 2)
 
-	return &email, nil
+	return mapEmail(lines), nil
 }
 
-//MapZincSearchEmails response into an email structure
+// Map the content of the file into a email struct
+func mapEmail(lines []string) *models.Email {
+	email := models.Email{}
+	detailsLines := strings.SplitAfter(string(lines[0]), "\n")
+
+	for _, line := range detailsLines {
+
+		if strings.HasPrefix(line, "Message-ID:") {
+			email.MessageID = strings.TrimPrefix(line, "Message-ID: ")
+		} else if strings.HasPrefix(line, "Date:") {
+			email.Date = strings.TrimPrefix(line, "Date: ")
+		} else if strings.HasPrefix(line, "From:") {
+			email.From = strings.TrimPrefix(line, "From: ")
+		} else if strings.HasPrefix(line, "To:") {
+			email.To = strings.TrimPrefix(line, "To: ")
+		} else if strings.HasPrefix(line, "Subject:") {
+			email.Subject = strings.TrimPrefix(line, "Subject: ")
+		} else if strings.HasPrefix(line, "Content-Type:") {
+			email.ContentType = strings.TrimPrefix(line, "Content-Type: ")
+		} else {
+			continue
+		}
+	}
+	email.Body = lines[1]
+
+	return &email
+}
+
+// MapZincSearchEmails response into an email structure
 func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) ([]*models.Email, error) {
 	emails := make([]*models.Email, 0, len(zincSearchResponse.Hits.Hits))
 

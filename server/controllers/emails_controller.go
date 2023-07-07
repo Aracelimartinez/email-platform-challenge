@@ -12,7 +12,6 @@ import (
 
 func IndexEmails(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var err error
 
 	users, err := services.GetUsers()
 	if err != nil {
