@@ -14,7 +14,7 @@ import (
 )
 
 // Get the names of the users' folders
-func GetUsers() ([]string, error) {
+func GetUsers() (*[]string, error) {
 	var users []string
 
 	path := filepath.Join(models.EmailDataSetRoot)
@@ -28,7 +28,7 @@ func GetUsers() ([]string, error) {
 		users = append(users, e.Name())
 	}
 
-	return users, nil
+	return &users, nil
 }
 
 // Walk through the user's directory to map every email
@@ -45,7 +45,7 @@ func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 		// Verificar si no es una carpeta
 		if !info.IsDir() {
 			// Ejecutar la función ProcessEmail para cada archivo
-			email, err := processEmail(path)
+			email, err := processEmail(&path)
 			if err != nil {
 				return fmt.Errorf("failed to process the email in the path '%s': %v\n", path, err)
 			} else {
@@ -64,11 +64,11 @@ func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 }
 
 // Read the email files and process it into an Email struct
-func processEmail(emailPath string) (*models.Email, error) {
+func processEmail(emailPath *string) (*models.Email, error) {
 	email := models.Email{}
 
 	// Lee el contenido del archivo
-	content, err := os.ReadFile(emailPath)
+	content, err := os.ReadFile(*emailPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to reading the file: %w\n", err)
 	}

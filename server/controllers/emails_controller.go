@@ -21,7 +21,7 @@ func IndexEmails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, user := range users {
+	for _, user := range *users {
 
 		log.Printf("Extracting emails from %s... \n", user)
 		userEmails, err := services.ExtractEmailsByUser(user)
