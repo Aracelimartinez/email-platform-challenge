@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sync"
 
 	"github.com/Aracelimartinez/email-platform-challenge/server/models"
 	"github.com/Aracelimartinez/email-platform-challenge/server/services"
@@ -19,28 +20,43 @@ func IndexEmails(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Failed to obtain the usernames"))
 		return
 	}
+	// Configure the maximum number of concurrent workers
+	maxWorkers := 10
+	workerSem := make(chan struct{}, maxWorkers)
+
+	var wg sync.WaitGroup
+	wg.Add(len(*users))
 
 	for _, user := range *users {
+		workerSem <- struct{}{} // Acquire a worker slot
 
-		log.Printf("Extracting emails from %s... \n", user)
-		userEmails, err := services.ExtractEmailsByUser(user)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			w.Write([]byte("Failed to extract the emails"))
-			return
-		}
+		go func(user string) {
+			defer func() {
+				<-workerSem // Release the worker slot
+				wg.Done()
+			}()
 
-		log.Printf("Indexing emails from %s \n", user)
-		res, err := zincsearch.CreateDocument(models.EmailIndexName, userEmails)
-		if err != nil {
-			log.Printf("error indexing emails from user: %s ...\n", userEmails)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			w.Write([]byte("Error indexing emails to zincsearch API"))
-			return
-		}
+			log.Printf("Extracting emails from %s... \n", user)
+			userEmails, err := services.ExtractEmailsByUser(user)
+			if err != nil {
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				w.Write([]byte("Failed to extract the emails"))
+				return
+			}
 
-		log.Printf("Indexed %d documents from user: %s\n", res.RecordCount, user)
+			log.Printf("Indexing emails from %s \n", user)
+			res, err := zincsearch.CreateDocument(models.EmailIndexName, userEmails)
+			if err != nil {
+				log.Printf("error indexing emails from user: %s ...\n", userEmails)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				w.Write([]byte("Error indexing emails to zincsearch API"))
+				return
+			}
+
+			log.Printf("Indexed %d documents from user: %s\n", res.RecordCount, user)
+		}(user)
 	}
+	wg.Wait()
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Emails indexed succesfully"))
