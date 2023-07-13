@@ -50,7 +50,7 @@ func IndexEmails(w http.ResponseWriter, r *http.Request) {
 			}
 
 			log.Printf("Indexing emails from %s \n", user)
-			res, err := zincsearch.CreateDocument("testeemails", userEmails)
+			res, err := zincsearch.CreateDocument(models.EmailIndexName, userEmails)
 			if err != nil {
 				mu.Lock()
 				errorOccurred = true
