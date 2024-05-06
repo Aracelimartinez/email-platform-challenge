@@ -18,7 +18,7 @@ func main() {
 
 	//Cors config
 	corsOptions := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedOrigins:   []string{"http://web:5173"},
 		AllowedMethods:   []string{"GET"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
@@ -27,7 +27,7 @@ func main() {
 
 	//Routes
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("Welcome"))
+		w.Write([]byte("Hello World!!!"))
 	})
 	router.Get("/indexer", controllers.IndexEmails)
 	router.Get("/search", controllers.SearchEmails)

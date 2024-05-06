@@ -15,15 +15,15 @@ type Credentials struct {
 
 var ZincSearchCredentials Credentials
 
-func init()  {
-	err:= loadEnv()
-	if err !=nil {
+func init() {
+	err := LoadEnv()
+	if err != nil {
 		fmt.Errorf("Failed to initialize de environment variables: %w", err)
 	}
 }
 
 // Initialize the env variables
-func loadEnv() (error) {
+func LoadEnv() error {
 	var err error
 
 	if err = godotenv.Load(".env"); err != nil {
@@ -36,5 +36,5 @@ func loadEnv() (error) {
 		Password: os.Getenv("ZINCSEARCH_PASSWORD"),
 	}
 
-	return  nil
+	return nil
 }

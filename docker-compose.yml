@@ -1,0 +1,50 @@
+version: '3'
+services:
+  zincsearch:
+    container_name: zincsearch
+    image: public.ecr.aws/zinclabs/zincsearch:latest
+    restart: always
+    env_file:
+      - ./zinc/.env
+    ports:
+      - '4080:4080'
+    networks:
+      - shared-network
+    volumes:
+      - ./zinc:/var/lib/zinc
+
+  server:
+    container_name: email_searcher_api
+    restart: unless-stopped
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - '3000:3000'
+    networks:
+      - shared-network
+    volumes:
+      - ./server:/app
+    depends_on:
+      - zincsearch
+
+  web:
+    container_name: email_searcher_interface
+    restart: unless-stopped
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - '5173:5173'
+    networks:
+      - shared-network
+    volumes:
+      - ./web:/app
+    depends_on:
+      - server
+
+networks:
+  shared-network:
+    driver: bridge

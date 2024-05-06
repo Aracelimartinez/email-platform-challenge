@@ -1,0 +1,7 @@
+.dockerignore
+
+Dockerfile
+
+.gitignore
+
+enron_mail_20110402*

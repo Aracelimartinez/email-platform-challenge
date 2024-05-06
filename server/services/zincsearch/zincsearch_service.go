@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	zincSearchHost = "http://localhost:4080"
+	zincSearchHost = "http://zincsearch:4080"
 )
 
 // CreateDocuments creates documents with the Bulkv2 ZincSearch API
@@ -80,7 +80,7 @@ func executeAndReadResponse(request *http.Request) ([]byte, error) {
 	return bodyResponse, nil
 }
 
-//SearchDocuments search the documents that match with the term given in the zincsearch API
+// SearchDocuments search the documents that match with the term given in the zincsearch API
 func SearchDocuments(indexName, term string, from, max int) (*SearchDocumentsRsponse, error) {
 	path := "/api/" + indexName + "/_search"
 	body := setSearchDocumentsRequest(indexName, term, from, max)

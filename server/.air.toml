@@ -1,0 +1,24 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+  # Array of commands to run before each build
+  cmd = "go build -o ./tmp/main ."
+  # Binary file yields from `cmd`.
+  bin = "tmp/main"
+  # Watch these filename extensions.
+  include_ext = ["go"]
+  # Exclude unchanged files.
+  exclude_unchanged = true
+
+[log]
+  time = true
+  # Only show main log (silences watcher, build, runner)
+  main_only = false
+  level = "debug"
+
+[color]
+  main = "yellow"
+  watcher = "cyan"
+  build = "green"
+  runner = "magenta"

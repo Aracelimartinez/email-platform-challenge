@@ -1,7 +1,7 @@
 package zincsearch
 
 const (
-	ZincSearchHost = "http://localhost:4080"
+	ZincSearchHost = "http://zincsearch:4080"
 )
 
 // ZincSaerchErrorReponse is the response of ZincSearch when an error occurs
@@ -17,18 +17,18 @@ type IndexDocumentsResponse struct {
 
 // SearchDocumentsRsponse is the response of ZincSearch when search for documents
 type SearchDocumentsRsponse struct {
-	Took      int   `json:"took"`
-	TimedOut  bool  `json:"timed_out"`
-	MaxScore  float64 `json:"max_score"`
-	Hits      Hits  `json:"hits"`
-	Buckets   interface{} `json:"buckets"`
-	Error     string  `json:"error"`
+	Took     int         `json:"took"`
+	TimedOut bool        `json:"timed_out"`
+	MaxScore float64     `json:"max_score"`
+	Hits     Hits        `json:"hits"`
+	Buckets  interface{} `json:"buckets"`
+	Error    string      `json:"error"`
 }
 
 // Simplified SearchResponse structure
 type Hits struct {
-	Total Total  `json:"total"`
-	Hits  []Hit  `json:"hits"`
+	Total Total `json:"total"`
+	Hits  []Hit `json:"hits"`
 }
 
 type Hit struct {

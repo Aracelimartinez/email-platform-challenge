@@ -1,5 +1,6 @@
 #data-set
 enron_mail_20150507*
 
-#env file
 .env
+
+tmp/
