@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
-	"github.com/Aracelimartinez/email-platform-challenge/server/controllers"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/controllers"
 )
 
 func main() {
@@ -18,7 +18,7 @@ func main() {
 
 	//Cors config
 	corsOptions := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://web:5173"},
+		AllowedOrigins:   []string{"http://localhost:5173"},
 		AllowedMethods:   []string{"GET"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,

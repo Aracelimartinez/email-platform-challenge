@@ -1,8 +1,8 @@
 package models
 
 const (
-	EmailDataSetRoot = "enron_mail_20150507/maildir"
-	EmailIndexName = "emails"
+	EmailDataSetRoot = "src/enron_mail_20150507/maildir"
+	EmailIndexName   = "emails"
 )
 
 type Email struct {

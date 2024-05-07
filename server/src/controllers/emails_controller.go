@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/Aracelimartinez/email-platform-challenge/server/models"
-	"github.com/Aracelimartinez/email-platform-challenge/server/services"
-	"github.com/Aracelimartinez/email-platform-challenge/server/services/zincsearch"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/models"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/services"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/services/zincsearch"
 )
 
 func IndexEmails(w http.ResponseWriter, r *http.Request) {

@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Aracelimartinez/email-platform-challenge/server/models"
-	"github.com/Aracelimartinez/email-platform-challenge/server/services/zincsearch"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/models"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/services/zincsearch"
 )
 
 // Get the names of the users' folders

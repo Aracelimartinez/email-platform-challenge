@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/Aracelimartinez/email-platform-challenge/server/config"
+	"github.com/Aracelimartinez/email-platform-challenge/server/src/config"
 )
 
 const (
