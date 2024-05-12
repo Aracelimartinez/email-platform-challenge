@@ -1,4 +1,4 @@
-package services
+package service
 
 import (
 	"encoding/json"
@@ -7,19 +7,19 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/Aracelimartinez/email-platform-challenge/server/src/models"
-	"github.com/Aracelimartinez/email-platform-challenge/server/src/services/zincsearch"
+	"github.com/Aracelimartinez/email-platform-challenge/server/internal/model"
+	"github.com/Aracelimartinez/email-platform-challenge/server/internal/service/zincsearch"
 )
 
 // Get the names of the users' folders
-func GetUsers() (*[]string, error) {
+func getUsers() (*[]string, error) {
 	var users []string
 
-	path := filepath.Join(models.EmailDataSetRoot)
+	path := filepath.Join(model.EmailDataSetRoot)
 
 	entries, err := os.ReadDir(path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to obtain the name of the user's folder: %w\n", err)
+		return nil, fmt.Errorf("failed to obtain the name of the user's folder: %w", err)
 	}
 
 	for _, e := range entries {
@@ -30,14 +30,14 @@ func GetUsers() (*[]string, error) {
 }
 
 // Walk through the user's directory to map every email
-func ExtractEmailsByUser(user string) ([]*models.Email, error) {
-	var emails []*models.Email
+func extractEmailsByUser(user string) ([]*model.Email, error) {
+	var emails []*model.Email
 	var err error
-	path := filepath.Join(models.EmailDataSetRoot, user)
+	path := filepath.Join(model.EmailDataSetRoot, user)
 
 	err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return fmt.Errorf("failed to go through the files and directories: %w\n", err)
+			return fmt.Errorf("failed to go through the files and directories: %w", err)
 		}
 
 		// Verificar si no es una carpeta
@@ -45,7 +45,7 @@ func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 			// Ejecutar la función ProcessEmail para cada archivo
 			email, err := processEmail(path)
 			if err != nil {
-				return fmt.Errorf("failed to process the email in the path '%s': %v\n", path, err)
+				return fmt.Errorf("failed to process the email in the path '%s': %v", path, err)
 			} else {
 				// Agregar el email al slice de emails
 				emails = append(emails, email)
@@ -62,12 +62,12 @@ func ExtractEmailsByUser(user string) ([]*models.Email, error) {
 }
 
 // Read the email files and process it into an Email struct
-func processEmail(emailPath string) (*models.Email, error) {
+func processEmail(emailPath string) (*model.Email, error) {
 
 	// Lee el contenido del archivo
 	content, err := os.ReadFile(emailPath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to reading the file: %w\n", err)
+		return nil, fmt.Errorf("failed to reading the file: %w", err)
 	}
 
 	// Convierte el contenido a string y separa el email en 2 partes
@@ -77,8 +77,8 @@ func processEmail(emailPath string) (*models.Email, error) {
 }
 
 // Map the content of the file into a email struct
-func mapEmail(lines []string) *models.Email {
-	email := models.Email{}
+func mapEmail(lines []string) *model.Email {
+	email := model.Email{}
 	detailsLines := strings.SplitAfter(string(lines[0]), "\n")
 
 	for _, line := range detailsLines {
@@ -105,11 +105,11 @@ func mapEmail(lines []string) *models.Email {
 }
 
 // MapZincSearchEmails response into an email structure
-func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) ([]*models.Email, error) {
-	emails := make([]*models.Email, 0, len(zincSearchResponse.Hits.Hits))
+func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) ([]*model.Email, error) {
+	emails := make([]*model.Email, 0, len(zincSearchResponse.Hits.Hits))
 
 	for _, hit := range zincSearchResponse.Hits.Hits {
-		var email models.Email
+		var email model.Email
 
 		sourceBytes, err := json.Marshal(hit.Source)
 		if err != nil {

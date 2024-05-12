@@ -1,9 +1,5 @@
 package zincsearch
 
-const (
-	ZincSearchHost = "http://zincsearch:4080"
-)
-
 // ZincSaerchErrorReponse is the response of ZincSearch when an error occurs
 type ZincSearchErrorReponse struct {
 	Error string `json:"error"`

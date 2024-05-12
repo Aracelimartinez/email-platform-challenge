@@ -10,6 +10,8 @@ tmp_dir = "tmp"
   include_ext = ["go"]
   # Exclude unchanged files.
   exclude_unchanged = true
+  # Ignore these filename extensions or directories.
+  exclude_dir = ["enron_mail20150508/*", "tmp", "enron_mail20150507/*"]
 
 [log]
   time = true
