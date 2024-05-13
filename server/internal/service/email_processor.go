@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -146,7 +147,13 @@ func preprocessHeaders(rawHeaders string) string {
 func processEmailAddress(emails string) []string {
 	var processedEmails []string
 	splitEmails := strings.Split(emails, ", ")
+	regex := regexp.MustCompile(`\<([^>]+)\>`)
 	for _, emailAddress := range splitEmails {
+		matches := regex.FindStringSubmatch(emailAddress)
+		if len(matches) == 2 {
+			emailAddress = strings.TrimSpace(matches[1])
+			processedEmails = append(processedEmails, matches[1])
+		}
 		emailAddress = strings.TrimSpace(emailAddress)
 		processedEmails = append(processedEmails, emailAddress)
 	}
