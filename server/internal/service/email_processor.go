@@ -6,6 +6,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/Aracelimartinez/email-platform-challenge/server/internal/model"
 	"github.com/Aracelimartinez/email-platform-challenge/server/internal/service/zincsearch"
@@ -33,6 +35,7 @@ func getUsers() (*[]string, error) {
 func extractEmailsByUser(user string) ([]*model.Email, error) {
 	var emails []*model.Email
 	var err error
+	var mtx sync.Mutex
 	path := filepath.Join(model.EmailDataSetRoot, user)
 
 	err = filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
@@ -40,9 +43,9 @@ func extractEmailsByUser(user string) ([]*model.Email, error) {
 			return fmt.Errorf("failed to go through the files and directories: %w", err)
 		}
 
-		// Verificar si no es una carpeta
 		if !info.IsDir() {
 			// Ejecutar la función ProcessEmail para cada archivo
+			mtx.Lock()
 			email, err := processEmail(path)
 			if err != nil {
 				return fmt.Errorf("failed to process the email in the path '%s': %v", path, err)
@@ -50,6 +53,7 @@ func extractEmailsByUser(user string) ([]*model.Email, error) {
 				// Agregar el email al slice de emails
 				emails = append(emails, email)
 			}
+			mtx.Unlock()
 		}
 		return nil
 	})
@@ -71,37 +75,91 @@ func processEmail(emailPath string) (*model.Email, error) {
 	}
 
 	// Convierte el contenido a string y separa el email en 2 partes
-	lines := strings.SplitN(string(content), "\r\n\r\n", 2)
+	parts := strings.SplitN(string(content), "\r\n\r\n", 2)
 
-	return mapEmail(lines), nil
+	email, err := mapEmail(parts[0], parts[1])
+	if err != nil {
+		return nil, err
+	}
+
+	return email, nil
 }
 
 // Map the content of the file into a email struct
-func mapEmail(lines []string) *model.Email {
+func mapEmail(headers, body string) (*model.Email, error) {
 	email := model.Email{}
-	detailsLines := strings.SplitAfter(string(lines[0]), "\n")
+	email.Body = body
+	processedHeader := preprocessHeaders(headers)
+	lines := strings.Split(processedHeader, "\r\n")
 
-	for _, line := range detailsLines {
+	for _, line := range lines {
 
-		if strings.HasPrefix(line, "Message-ID:") {
-			email.MessageID = strings.TrimPrefix(line, "Message-ID: ")
-		} else if strings.HasPrefix(line, "Date:") {
-			email.Date = strings.TrimPrefix(line, "Date: ")
-		} else if strings.HasPrefix(line, "From:") {
-			email.From = strings.TrimPrefix(line, "From: ")
-		} else if strings.HasPrefix(line, "To:") {
-			email.To = strings.TrimPrefix(line, "To: ")
-		} else if strings.HasPrefix(line, "Subject:") {
-			email.Subject = strings.TrimPrefix(line, "Subject: ")
-		} else if strings.HasPrefix(line, "Content-Type:") {
-			email.ContentType = strings.TrimPrefix(line, "Content-Type: ")
-		} else {
-			continue
+		if colonIndex := strings.Index(line, ":"); colonIndex != -1 {
+			key := line[:colonIndex]
+			value := strings.TrimSpace(line[colonIndex+1:])
+
+			switch key {
+			case "Message-ID":
+				email.MessageID = value
+			case "Date":
+				var err error
+				email.Date, err = parseEmailDate(value)
+				if err != nil {
+					return nil, fmt.Errorf("invalid date format: %v", err)
+				}
+			case "From":
+				email.From = value
+			case "To":
+				email.To = processEmailAddress(value)
+			case "Cc":
+				email.Cc = processEmailAddress(value)
+			case "Bcc":
+				email.Bcc = processEmailAddress(value)
+			case "Subject":
+				email.Subject = value
+			case "Content-Type":
+				email.ContentType = value
+			}
 		}
 	}
-	email.Body = lines[1]
+	return &email, nil
+}
 
-	return &email
+// Pre-process the headers to avoid data losses
+func preprocessHeaders(rawHeaders string) string {
+	lines := strings.Split(rawHeaders, "\r\n")
+	var processedLines []string
+
+	for _, line := range lines {
+
+		if len(line) > 0 && (line[0] == ' ' || line[0] == '\t') {
+			if len(processedLines) > 0 {
+				processedLines[len(processedLines)-1] += " " + strings.TrimSpace(line)
+			}
+		} else {
+			processedLines = append(processedLines, line)
+		}
+	}
+	return strings.Join(processedLines, "\r\n")
+}
+
+func processEmailAddress(emails string) []string {
+	var processedEmails []string
+	splitEmails := strings.Split(emails, ", ")
+	for _, emailAddress := range splitEmails {
+		emailAddress = strings.TrimSpace(emailAddress)
+		processedEmails = append(processedEmails, emailAddress)
+	}
+	return processedEmails
+}
+
+// Parse the emails date
+func parseEmailDate(dateStr string) (time.Time, error) {
+	if idx := strings.LastIndex(dateStr, " ("); idx != -1 {
+		dateStr = dateStr[:idx]
+	}
+	const layout = "Mon, 2 Jan 2006 15:04:05 -0700"
+	return time.Parse(layout, dateStr)
 }
 
 // MapZincSearchEmails response into an email structure

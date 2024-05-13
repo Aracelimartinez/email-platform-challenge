@@ -1,19 +1,25 @@
 package model
 
+import "time"
+
 const (
-	EmailDataSetRoot = "/tmp/maildir"
-	// EmailDataSetRoot = "enron_mail_20150507/maildir"
-	EmailIndexName = "emails"
+	// EmailDataSetRoot = "/tmp/maildir"
+	EmailDataSetRoot = "enron_mail_20150507/maildir"
+	EmailIndexName   = "emails"
 )
 
+// var emailHeaders = [15]string{"Message-ID", "Date", "From", "To", "Subject", "Mime-Version", "Content-Type", "Content-Transfer-Encoding", "X-From", "X-To", "X-cc", "X-bcc", "X-Folder", "X-Origin", "X-FileName"}
+
 type Email struct {
-	MessageID   string `json:"message_id"`
-	Date        string `json:"date"`
-	From        string `json:"from"`
-	To          string `json:"to"`
-	Subject     string `json:"subject"`
-	ContentType string `json:"content_type"`
-	Body        string `json:"body"`
+	MessageID   string    `json:"message_id"`
+	Date        time.Time `json:"date"`
+	From        string    `json:"from"`
+	To          []string  `json:"to"`
+	Cc          []string  `json:"cc"`
+	Bcc         []string  `json:"bcc"`
+	Subject     string    `json:"subject"`
+	ContentType string    `json:"content_type"`
+	Body        string    `json:"body"`
 }
 
 //Example of the email
