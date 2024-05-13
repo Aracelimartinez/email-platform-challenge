@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"encoding/json"
 	"net/http"
 
 	"github.com/Aracelimartinez/email-platform-challenge/server/internal/model"
+	"github.com/Aracelimartinez/email-platform-challenge/server/internal/response"
 	"github.com/Aracelimartinez/email-platform-challenge/server/internal/service"
 	"github.com/Aracelimartinez/email-platform-challenge/server/internal/service/zincsearch"
 )
@@ -18,18 +18,15 @@ func SearchEmails(w http.ResponseWriter, r *http.Request) {
 
 	searchResponse, err := zincsearch.SearchDocuments(model.EmailIndexName, query, from, maxResults)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		w.Write([]byte("Error searching into emails at the zincsearch API"))
+		response.Err(w, http.StatusBadRequest, err)
 		return
 	}
 
 	emails, err := service.MapZincSearchEmails(searchResponse)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		w.Write([]byte("Failed mapping the emails"))
+		response.Err(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(emails)
+	response.JSON(w, http.StatusOK, emails)
 }

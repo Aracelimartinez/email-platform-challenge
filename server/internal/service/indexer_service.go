@@ -77,7 +77,7 @@ func DownloadProcessor() error {
 	return nil
 }
 
-// checkExists checks if a folder exists and returns a boolean.
+// checkIfNotExists checks if a folder exists and returns a boolean.
 func checkIfNotExists(path string) bool {
 	_, err := os.Stat(path)
 	return errors.Is(err, os.ErrNotExist)
