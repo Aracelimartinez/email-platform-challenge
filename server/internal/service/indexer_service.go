@@ -158,14 +158,17 @@ func decompressTarGz(src, dest string) error {
 
 // deletes the enron dataset
 func RemoveAllData(dir string) error {
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		return os.RemoveAll(path)
+
+		if path != dir {
+			err := os.RemoveAll(path)
+			if err != nil {
+				return err
+			}
+		}
+		return nil
 	})
-	if err != nil {
-		return err
-	}
-	return nil
 }

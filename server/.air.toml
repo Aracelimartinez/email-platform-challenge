@@ -11,7 +11,7 @@ tmp_dir = "tmp"
   # Exclude unchanged files.
   exclude_unchanged = true
   # Ignore these filename extensions or directories.
-  exclude_dir = ["enron_mail20150508/*", "tmp", "enron_mail20150507/*"]
+  exclude_dir = ["tmp", "enron_mail20150507/*"]
 
 [log]
   time = true

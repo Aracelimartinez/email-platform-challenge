@@ -1,7 +1,7 @@
 package model
 
 const (
-	EmailDataSetRoot = "tmp/maildir"
+	EmailDataSetRoot = "/tmp/maildir"
 	// EmailDataSetRoot = "enron_mail_20150507/maildir"
 	EmailIndexName = "emails"
 )
