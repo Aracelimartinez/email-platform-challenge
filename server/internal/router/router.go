@@ -21,7 +21,7 @@ func Generate() http.Handler {
 func configRoutes(router *chi.Mux) http.Handler {
 	//CORS Config
 	corsOptions := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"},
+		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8080"},
 		AllowedMethods:   []string{"GET"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,
