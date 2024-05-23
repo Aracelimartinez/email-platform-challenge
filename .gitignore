@@ -3,4 +3,4 @@ enron_mail_20150507*
 
 .env
 
-tmp/
+.terraform*

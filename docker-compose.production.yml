@@ -4,10 +4,10 @@ services:
     container_name: zincsearch
     image: public.ecr.aws/zinclabs/zincsearch:latest
     restart: always
-    env_file:
-      - .env
     environment:
-      - GIN_MODE=release
+      GIN_MODE: release
+      ZINC_FIRST_ADMIN_USER: ${ZINC_FIRST_ADMIN_USER}
+      ZINC_FIRST_ADMIN_PASSWORD: ${ZINC_FIRST_ADMIN_PASSWORD}
     networks:
       - backend-network
     volumes:
@@ -16,14 +16,17 @@ services:
   server:
     container_name: email_searcher_api
     restart: unless-stopped
-    env_file:
-      - .env
     build:
       context: ./server
       dockerfile: Dockerfile
       target: production
     ports:
       - '3000:3000'
+    environment:
+      API_PORT: ${API_PORT}
+      ZINCSEARCH_USERNAME: ${ZINCSEARCH_USERNAME}
+      ZINCSEARCH_PASSWORD: ${ZINCSEARCH_PASSWORD}
+      ZINCSEARCH_HOST: ${ZINCSEARCH_HOST}
     networks:
       - backend-network
     depends_on:
