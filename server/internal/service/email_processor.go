@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -174,21 +173,32 @@ func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) 
 	emails := make([]*model.Email, 0, len(zincSearchResponse.Hits.Hits))
 
 	for _, hit := range zincSearchResponse.Hits.Hits {
-		var email model.Email
+		email := &model.Email{}
 
-		sourceBytes, err := json.Marshal(hit.Source)
-		if err != nil {
-			fmt.Println("Error in mapping the emails: ", err)
-			continue
+		for key, value := range hit.Source {
+			switch key {
+			case "message_id":
+				email.MessageID, _ = value.(string)
+			case "date":
+				email.Date, _ = time.Parse(time.RFC3339, value.(string))
+			case "from":
+				email.From, _ = value.(string)
+			case "to":
+				email.To, _ = value.([]string)
+			case "cc":
+				email.Cc, _ = value.([]string)
+			case "bcc":
+				email.Bcc, _ = value.([]string)
+			case "subject":
+				email.Subject, _ = value.(string)
+			case "content_type":
+				email.ContentType, _ = value.(string)
+			case "body":
+				email.Body, _ = value.(string)
+			}
 		}
 
-		err = json.Unmarshal(sourceBytes, &email)
-		if err != nil {
-			fmt.Println("Error in mapping the emails: ", err)
-			continue
-		}
-
-		emails = append(emails, &email)
+		emails = append(emails, email)
 	}
 
 	return emails, nil
