@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 
+	"github.com/Aracelimartinez/email-platform-challenge/server/configs"
 	"github.com/Aracelimartinez/email-platform-challenge/server/internal/handler"
 )
 
@@ -21,7 +22,7 @@ func Generate() http.Handler {
 func configRoutes(router *chi.Mux) http.Handler {
 	//CORS Config
 	corsOptions := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173", "http://localhost:8080"},
+		AllowedOrigins:   []string{configs.GlobalConfig.FrontEndAdd, "http://localhost:8080"},
 		AllowedMethods:   []string{"GET"},
 		AllowedHeaders:   []string{"Content-Type"},
 		AllowCredentials: true,

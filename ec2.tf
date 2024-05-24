@@ -45,7 +45,7 @@ resource "aws_instance" "email-searcher" {
     ZINCSEARCH_USERNAME       = data.external.env.result["ZINCSEARCH_USERNAME"],
     ZINCSEARCH_PASSWORD       = data.external.env.result["ZINCSEARCH_PASSWORD"],
     ZINCSEARCH_HOST           = data.external.env.result["ZINCSEARCH_HOST"]
-
+    FRONT_END_ADD             = "http://${aws_instance.email-searcher.public_dns}:8080"
   })
 
   tags = {

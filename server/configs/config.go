@@ -14,6 +14,7 @@ type Config struct {
 	//Data to connect with zincsearch
 	ZincSearchCredentials Credentials
 	APIPort               string
+	FrontEndAdd           string
 }
 
 var (
@@ -33,7 +34,8 @@ func LoadEnv() Config {
 			Password: os.Getenv("ZINCSEARCH_PASSWORD"),
 			Host:     os.Getenv("ZINCSEARCH_HOST"),
 		},
-		APIPort: os.Getenv("API_PORT"),
+		APIPort:     os.Getenv("API_PORT"),
+		FrontEndAdd: os.Getenv("FRONT_END_ADD"),
 	}
 	return GlobalConfig
 }
