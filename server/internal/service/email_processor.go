@@ -173,33 +173,32 @@ func MapZincSearchEmails(zincSearchResponse *zincsearch.SearchDocumentsRsponse) 
 	emails := make([]*model.Email, 0, len(zincSearchResponse.Hits.Hits))
 
 	for _, hit := range zincSearchResponse.Hits.Hits {
-		email := &model.Email{}
+		var email model.Email
+		source := hit.Source
 
-		for key, value := range hit.Source {
-			switch key {
-			case "message_id":
-				email.MessageID, _ = value.(string)
-			case "date":
-				email.Date, _ = time.Parse(time.RFC3339, value.(string))
-			case "from":
-				email.From, _ = value.(string)
-			case "to":
-				email.To, _ = value.([]string)
-			case "cc":
-				email.Cc, _ = value.([]string)
-			case "bcc":
-				email.Bcc, _ = value.([]string)
-			case "subject":
-				email.Subject, _ = value.(string)
-			case "content_type":
-				email.ContentType, _ = value.(string)
-			case "body":
-				email.Body, _ = value.(string)
-			}
-		}
+		email.MessageID = source["message_id"].(string)
+		email.Date, _ = time.Parse(time.RFC3339, source["date"].(string))
+		email.From = source["from"].(string)
+		email.Subject = source["subject"].(string)
+		email.ContentType = source["content_type"].(string)
+		email.Body = source["body"].(string)
 
-		emails = append(emails, email)
+		email.To = convertToStringSlice(source["to"])
+		email.Cc = convertToStringSlice(source["cc"])
+		email.Bcc = convertToStringSlice(source["bcc"])
+
+		emails = append(emails, &email)
 	}
 
 	return emails, nil
+}
+
+func convertToStringSlice(data interface{}) []string {
+	var result []string
+	if data != nil {
+		for _, v := range data.([]interface{}) {
+			result = append(result, v.(string))
+		}
+	}
+	return result
 }

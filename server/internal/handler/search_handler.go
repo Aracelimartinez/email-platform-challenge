@@ -14,7 +14,7 @@ func SearchEmails(w http.ResponseWriter, r *http.Request) {
 	var err error
 	query := r.URL.Query().Get("query")
 	from := 0
-	maxResults := 15
+	maxResults := 2
 
 	searchResponse, err := zincsearch.SearchDocuments(model.EmailIndexName, query, from, maxResults)
 	if err != nil {
