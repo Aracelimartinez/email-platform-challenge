@@ -3,9 +3,9 @@ package model
 import "time"
 
 const (
-	// EmailDataSetRoot = "/tmp/maildir"
-	EmailDataSetRoot = "enron_mail_20150507/maildir"
-	EmailIndexName   = "emails"
+	EmailDataSetRoot = "/tmp/maildir"
+	// EmailDataSetRoot = "enron_mail_20150507/maildir"
+	EmailIndexName = "emails"
 )
 
 type Email struct {
