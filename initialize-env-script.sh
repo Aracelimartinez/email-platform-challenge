@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# Change the contents of this output to get the environment variables
-# of interest. The output must be valid JSON, with strings for both
-# keys and values.
 cat <<EOF
 {
   "ZINC_FIRST_ADMIN_USER": "$ZINC_FIRST_ADMIN_USER",
@@ -11,6 +8,5 @@ cat <<EOF
   "ZINCSEARCH_USERNAME": "$ZINCSEARCH_USERNAME",
   "ZINCSEARCH_PASSWORD": "$ZINCSEARCH_USERNAME",
   "ZINCSEARCH_HOST": "$ZINCSEARCH_HOST"
-  "FRONT_END_ADD": "$FRONT_END_ADD"
 }
 EOF

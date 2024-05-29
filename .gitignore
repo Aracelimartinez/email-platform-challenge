@@ -4,3 +4,5 @@ enron_mail_20150507*
 .env
 
 .terraform*
+
+plan

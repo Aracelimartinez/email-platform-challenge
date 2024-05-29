@@ -35,7 +35,7 @@ func LoadEnv() Config {
 			Host:     os.Getenv("ZINCSEARCH_HOST"),
 		},
 		APIPort:     os.Getenv("API_PORT"),
-		FrontEndAdd: os.Getenv("FRONT_END_ADD"),
+		FrontEndAdd: os.Getenv("FRONT_END_URL"),
 	}
 	return GlobalConfig
 }
