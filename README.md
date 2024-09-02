@@ -17,3 +17,6 @@ It has a monorepo structure. See below the mobile and web preview.
 - API Router: [Chi](https://github.com/go-chi/chi)
 - Search Engine: [Zinc](https://github.com/zinclabs/zinc)
 - Frontend: [Vue 3](https://vuejs.org/) + [Tailwind](https://tailwindcss.com/)
+- Terraform
+- Dcoker
+- AWS
